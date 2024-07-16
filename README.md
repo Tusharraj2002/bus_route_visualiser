@@ -1,3 +1,5 @@
+https://tusharraj2002.github.io/bus_route_visualiser.github.io/
+
 🚍 Bus Route Visualizer: Shortest Path Finder
 Welcome to the Bus Route Visualizer, a captivating web application that helps you find the shortest path between bus stops in bihar. This project leverages advanced algorithms(Dijkstra) to visualize the most efficient routes dynamically. Built with HTML, CSS, and JavaScript, it's a fantastic tool for visual learners and those interested in graph theory.
 
