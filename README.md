@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @Tusharraj2002
+- 👋 Hi, I’m Tushar raj from bihar,muzaffarpur.
 - 👀 I’m interested in doing competitive programming as well as web development.
 - 🌱 I’m currently learning - react.
 - 💞️ I’m looking to collaborate on web dev and algorithm optimisation
