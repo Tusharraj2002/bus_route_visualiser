@@ -88,7 +88,7 @@ graph.addEdge('Bhagalpur', 'Purnia', 93);
 graph.addEdge('Muzaffarpur', 'Darbhanga', 74);
 graph.addEdge('Purnia', 'Darbhanga', 144);
 graph.addEdge('Patna', 'Bettiah', 200);
-graph.addEdge('Patna', 'Chapra', 71);
+graph.addEdge('Gaya', 'Chapra', 71);
 graph.addEdge('Chapra', 'Buxar', 69);
 graph.addEdge('Buxar', 'Ara', 55);
 graph.addEdge('Ara', 'Chapra', 80); 
