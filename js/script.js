@@ -14,7 +14,7 @@ class Graph {
     dijkstra(startNode, endNode) {
         let distances = {};
         let prev = {};
-        let pq = new PriorityQueue();     
+        let pq = new PriorityQueue();
         distances[startNode] = 0;
         pq.enqueue(startNode, 0);
         this.nodes.forEach(node => {
@@ -50,7 +50,6 @@ class PriorityQueue {
     enqueue(element, priority) {
         let qElement = new QElement(element, priority);
         let contain = false;
-
         for (let i = 0; i < this.items.length; i++) {
             if (this.items[i].priority > qElement.priority) {
                 this.items.splice(i, 0, qElement);
@@ -91,11 +90,11 @@ graph.addEdge('Patna', 'Bettiah', 200);
 graph.addEdge('Gaya', 'Chapra', 71);
 graph.addEdge('Chapra', 'Buxar', 69);
 graph.addEdge('Buxar', 'Ara', 55);
-graph.addEdge('Ara', 'Chapra', 80); 
-graph.addEdge('Ara', 'Gaya', 90); 
+graph.addEdge('Ara', 'Chapra', 80);
+graph.addEdge('Ara', 'Gaya', 90);
 graph.addEdge('Chapra', 'Bettiah', 230);
-graph.addEdge('Buxar', 'Bettiah', 400); 
-graph.addEdge('Darbhanga', 'Bettiah', 150); 
+graph.addEdge('Buxar', 'Bettiah', 400);
+graph.addEdge('Darbhanga', 'Bettiah', 150);
 const coordinates = {
     'Patna': { x: 50, y: 450 },
     'Gaya': { x: 150, y: 350 },
@@ -111,17 +110,17 @@ const coordinates = {
 const canvas = document.getElementById('map');
 const ctx = canvas.getContext('2d');
 const busImage = new Image();
-busImage.src = 'js/bus.png'; // Adjust the path as needed
-// Dynamically set canvas size based on coordinates
+busImage.src = 'js/bus.png';
 const maxX = Math.max(...Object.values(coordinates).map(coord => coord.x));
 const maxY = Math.max(...Object.values(coordinates).map(coord => coord.y));
-canvas.width = maxX + 50; // Add some padding
-canvas.height = maxY + 50; // Add some padding
+canvas.width = maxX + 50; 
+canvas.height = maxY + 50;
 busImage.onload = function() {
     drawGraph();
+    populateCitySelection();
+    document.getElementById('notification').textContent = 'Distance traveled: 0 km';
 };
 function drawGraph() {
-    // Draw edges with distances
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = '#ccc';
     ctx.lineWidth = 2;
@@ -138,13 +137,12 @@ function drawGraph() {
             ctx.fillText(neighbor.weight, midX, midY);
         });
     });
-    // Draw nodes
     ctx.fillStyle = '#000';
     ctx.font = '14px Arial';
     graph.nodes.forEach(node => {
         const { x, y } = coordinates[node];
         ctx.beginPath();
-        ctx.arc(x, y, 10, 0, 2 * 3.14159);
+        ctx.arc(x, y, 10, 0, 2 * Math.PI);
         ctx.fill();
         ctx.fillText(node, x - 20, y - 15);
     });
@@ -162,15 +160,23 @@ function drawPath(path) {
 }
 function moveBus(startNode, endNode) {
     const path = graph.dijkstra(startNode, endNode);
-    // Draw the green path first
+    let totalDistance = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+        const node = path[i];
+        const neighbor = graph.adjacencyList.get(node).find(n => n.node === path[i + 1]);
+        if (neighbor) {
+            totalDistance += neighbor.weight;
+        }
+    }
+    let traveledDistance = 0;
+    document.getElementById('notification').textContent = `Total distance to be traveled: ${totalDistance} km`;
     drawPath(path);
-    // Animate the bus moving along the path after drawing the path
     let index = 0;
     function animate() {
         if (index < path.length - 1) {
             const start = coordinates[path[index]];
             const end = coordinates[path[index + 1]];
-            const duration = 3000; // 3 seconds (increase this value for slower animation)
+            const duration = 3000;
             const startTime = performance.now();
             function move(time) {
                 const elapsed = time - startTime;
@@ -179,8 +185,8 @@ function moveBus(startNode, endNode) {
                 const y = start.y + (end.y - start.y) * progress;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawGraph();
-                drawPath(path); // Keep drawing the green path
-                ctx.drawImage(busImage, x - 10, y - 10, 20, 20); // Adjust the size of the bus image as needed
+                drawPath(path); 
+                ctx.drawImage(busImage, x - 10, y - 10, 20, 20);
                 if (progress < 1) {
                     requestAnimationFrame(move);
                 } else {
@@ -189,54 +195,38 @@ function moveBus(startNode, endNode) {
                 }
             }
             requestAnimationFrame(move);
-        } else {
-            // Draw the final path without green color
+        } 
+        else {
             drawGraph();
             updateCitySelection();
+            document.getElementById('notification').textContent = `Distance traveled: 0 km`;
         }
     }
-    // Start the animation after a short delay to ensure the path is visible first
     setTimeout(animate, 500);
 }
-function updateCitySelection() {
-    const startCitySelect = document.getElementById('start-city');
-    const endCitySelect = document.getElementById('end-city');
-    startCitySelect.innerHTML = '';
-    endCitySelect.innerHTML = '';
+function populateCitySelection() {
+    const startSelect = document.getElementById('start-city');
+    const endSelect = document.getElementById('end-city');
     graph.nodes.forEach(node => {
         const option1 = document.createElement('option');
-        option1.value = node;
-        option1.textContent = node;
-        startCitySelect.appendChild(option1);
         const option2 = document.createElement('option');
-        option2.value = node;
-        option2.textContent = node;
-        endCitySelect.appendChild(option2);
+        option1.value = option2.value = node;
+        option1.text = option2.text = node;
+        startSelect.add(option1);
+        endSelect.add(option2);
     });
 }
-updateCitySelection();
-document.getElementById('add-city').addEventListener('click', () => {
-    const newCity = document.getElementById('new-city').value;
-    if (newCity && !graph.nodes.has(newCity)) {
-        graph.addNode(newCity);
-        coordinates[newCity] = { x: Math.random() * 450, y: Math.random() * 450 };
-        drawGraph();
-        updateCitySelection();
-    }
-});
-document.getElementById('add-edge').addEventListener('click', () => {
-    const city1 = document.getElementById('edge-city1').value;
-    const city2 = document.getElementById('edge-city2').value;
-    const weight = parseInt(document.getElementById('edge-weight').value);
-    if (graph.nodes.has(city1) && graph.nodes.has(city2) && weight) {
-        graph.addEdge(city1, city2, weight);
-        drawGraph();
-    }
-});
+function updateCitySelection() {
+    const startSelect = document.getElementById('start-city');
+    const endSelect = document.getElementById('end-city');
+    startSelect.innerHTML = '';
+    endSelect.innerHTML = '';
+    populateCitySelection();
+}
 document.getElementById('visualize-path').addEventListener('click', () => {
     const startCity = document.getElementById('start-city').value;
     const endCity = document.getElementById('end-city').value;
-    if (graph.nodes.has(startCity) && graph.nodes.has(endCity)) {
+    if (startCity && endCity) {
         moveBus(startCity, endCity);
     }
 });
