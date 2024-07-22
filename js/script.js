@@ -8,6 +8,10 @@ class Graph {
         this.adjacencyList.set(node, []);
     }
     addEdge(node1, node2, weight) {
+        if (!this.adjacencyList.has(node1) || !this.adjacencyList.has(node2)) {
+            alert('Both cities must exist in the graph');
+            return;
+        }
         this.adjacencyList.get(node1).push({ node: node2, weight: weight });
         this.adjacencyList.get(node2).push({ node: node1, weight: weight });
     }
@@ -115,6 +119,7 @@ const maxX = Math.max(...Object.values(coordinates).map(coord => coord.x));
 const maxY = Math.max(...Object.values(coordinates).map(coord => coord.y));
 canvas.width = maxX + 50; 
 canvas.height = maxY + 50;
+
 busImage.onload = function() {
     drawGraph();
     populateCitySelection();
@@ -228,6 +233,32 @@ document.getElementById('visualize-path').addEventListener('click', () => {
     const endCity = document.getElementById('end-city').value;
     if (startCity && endCity) {
         moveBus(startCity, endCity);
+    }
+});
+document.getElementById('add-city').addEventListener('click', () => {
+    const newCity = document.getElementById('new-city').value;
+    if (newCity && !graph.nodes.has(newCity)) {
+        graph.addNode(newCity);
+        coordinates[newCity] = { x: Math.random() * canvas.width, y: Math.random() * canvas.height };
+        updateCitySelection();
+        drawGraph();
+        document.getElementById('new-city').value = '';
+    } else {
+        alert('City already exists or input is empty.');
+    }
+});
+document.getElementById('add-edge').addEventListener('click', () => {
+    const city1 = document.getElementById('edge-city1').value;
+    const city2 = document.getElementById('edge-city2').value;
+    const weight = parseInt(document.getElementById('edge-weight').value);
+    if (city1 && city2 && weight > 0 && graph.nodes.has(city1) && graph.nodes.has(city2)) {
+        graph.addEdge(city1, city2, weight);
+        drawGraph();
+        document.getElementById('edge-city1').value = '';
+        document.getElementById('edge-city2').value = '';
+        document.getElementById('edge-weight').value = '';
+    } else {
+        alert('Invalid input. Ensure cities exist and distance is positive.');
     }
 });
 
